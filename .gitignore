@@ -1,2 +1,5 @@
-config/*
+tmp/*
 node_modules
+list.*
+package-lock.json
+yarn.lock
