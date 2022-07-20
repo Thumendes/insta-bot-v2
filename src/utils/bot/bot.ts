@@ -18,28 +18,30 @@ export class Bot {
 
     const context = await browser.newContext(contextOptions);
     const page = await context.newPage();
-    await page.goto("https://www.instagram.com");
     loader.succeed("Browser ready!");
 
     if (!storageState) {
+      await page.goto("https://www.instagram.com");
       await page.waitForSelector("input[name=username]");
       await page.type("input[name=username]", user);
       await page.type("input[name=password]", password);
       await page.click("button[type=submit]");
       await page.waitForNavigation();
       await context.storageState({ path: `${process.cwd()}/tmp/state.json` });
+      await page.waitForTimeout(1000);
     }
 
     await page.goto(`https://www.instagram.com/p/${code}/`);
-    await page.pause();
-    await page.waitForSelector(`[data-testid="post-comment-text-area"]`);
+    // await page.pause();
+    await page.waitForSelector(`form textarea`);
+    await page.waitForTimeout(1000);
 
     let countComments = 0;
     while (true) {
       const comment = this.list[Math.floor(Math.random() * this.list.length)];
-      await page.type(`[data-testid="post-comment-text-area"]`, comment);
-      await page.waitForTimeout(500);
-      await page.locator('[data-testid="post-comment-input-button"]').click();
+      await page.type(`form textarea`, comment);
+      await page.waitForTimeout(1000);
+      await page.locator('form button:has-text("Publicar")').click();
       countComments++;
 
       console.log(`${chalk.green("✔")} Comment ${countComments}`);
